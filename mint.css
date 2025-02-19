@@ -1,0 +1,6 @@
+@import '@mintlify/components';
+
+button {
+    padding: 12px 24px !important; /* Adjust padding as needed */
+    border-radius: 4px !important;
+  }
