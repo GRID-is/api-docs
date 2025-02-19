@@ -42,9 +42,12 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/GRID-is",
+      "x": "https://x.com/GRID_hq",
+      "linkedin": "https://www.linkedin.com/company/gridmakers/",
+      "facebook": "https://www.facebook.com/gridmakers/",
+      "youtube": "https://youtube.com/@grid-is",
+      "medium": "https://medium.com/grid-spreadsheets-run-the-world"
     }
   }
 }
