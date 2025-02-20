@@ -1,24 +1,30 @@
 ---
-title: "Getting Started"
-description: "Learn how to set up and use the GRID API."
+title: "Quick start"
+description: "Learn how to set up and use the GRID API"
 ---
 
-### 1. Upload Your Spreadsheet
-Sign up at [grid.is](https://alpha.grid.is/user/login).
+<Steps>
+  <Step title="Sign up for GRID">
+    Head over to [alpha.grid.is](https://alpha.grid.is) and create an account in just a few seconds.
+  </Step>
+  <Step title="Add a spreadsheet">
+    Once you're logged in, navigate to your [spreadsheets overview](https://alpha.grid.is/spreadsheets), click **Add Spreadsheet**, and upload your file.
 
-### 2. Add a Spreadsheet
-After logging in, navigate to the [Spreadsheet Overview Page](https://alpha.grid.is/spreadsheets), click **Add Spreadsheet**, and upload your file.
+    <Frame>
+      <img src="/images/upload-spreadsheet.png" />
+    </Frame>
+  </Step>
+  <Step title="Get the spreadsheet id">
+    Once it's been uploaded, go to the spreadsheet's **details page** to get the **spreadsheet id**. You'll need this when you call the API.
 
-![Upload Spreadsheet](/images/upload-spreadsheet.png)
-
-### 3. Obtain the Workbook ID
-Once uploaded, go to the **Details Page** to obtain the **Workbook ID**, which you will need for API interactions.
-
-![Workbook ID](/images/workbook-id.png)
-
-### 4. Obtain an API Key
-Go to [Account Settings](https://alpha.grid.is/account/advanced) and copy your **API Key**.
-
-### 5. Make Your First API Request
-Use your **API Key** and **Workbook ID** to make your first query. Navigate to **[GRID API Query Page](/api-reference/workbooks/query-workbook-data?playground=open)** inside the application to test the API.
-
+    <Frame>
+      <img src="/images/spreadsheet-id.png" />
+    </Frame>
+  </Step>
+  <Step title="Get an API key">
+    Go to your [account settings](https://alpha.grid.is/account/advanced) and copy your **API key**.
+  </Step>
+  <Step title="Make your first API request">
+    Use your **API key** and **spreadsheet id** to make your first query. Read the [documentation on the query endpoint](/api-reference/workbooks/query), and then try it out in the [query playground](/api-reference/workbooks/query?playground=open).
+  </Step>
+</Steps>
