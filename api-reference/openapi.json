@@ -1,0 +1,923 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GRID API",
+    "summary": "Spreadsheets run the world. Now you can run spreadsheets.",
+    "description": "GRID's API transforms spreadsheets into powerful, programmable APIs. Our platform supports seamless integration of spreadsheet data into your applications, supporting dynamic interactions with spreadsheets, including real-time data querying with ephemeral updates.",
+    "version": "1.0.0-alpha"
+  },
+  "servers": [{ "url": "https://api-alpha.grid.is" }],
+  "paths": {
+    "/v1/workbooks/{id}/query": {
+      "post": {
+        "tags": ["workbooks"],
+        "summary": "Query workbook data",
+        "description": "Read cell data or apply temporary changes.\n\nSend a JSON object with a `read` key to read values from cells and formulas. Optionally, use\nthe `apply` key to update cells before reading.",
+        "operationId": "query_workbook",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Unique workbook id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QueryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QueryResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Error returned when you make a bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_code": "invalid_json",
+                  "error_message": "Bad request",
+                  "error_details": "RequestJsonParsingFailed"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error returned when you don't have permission to query a workbook",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_message": "Forbidden",
+                  "error_details": "Only API keys can access the workbook engine API"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error returned when you exceed your API rate limit",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_code": "rate_limit_exceeded",
+                  "error_message": "Rate limit exceeded",
+                  "error_details": "Retry after: 60"
+                }
+              }
+            }
+          }
+        },
+        "x-openai-isConsequential": false
+      }
+    },
+    "/v1/workbooks/{id}/export": {
+      "post": {
+        "tags": ["workbooks"],
+        "summary": "Export workbook as an .xlsx file",
+        "description": "Export a workbook as an .xlsx file. Cells can be updated before the\nworkbook is exported.",
+        "operationId": "export_workbook",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Unique workbook id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ExportRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workbook exported as an .xlsx file",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          },
+          "400": {
+            "description": "Error returned when you make a bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_code": "invalid_json",
+                  "error_message": "Bad request",
+                  "error_details": "RequestJsonParsingFailed"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error returned when you don't have permission to query a workbook",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_message": "Forbidden",
+                  "error_details": "Only API keys can access the workbook engine API"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error returned when you exceed your API rate limit",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_code": "rate_limit_exceeded",
+                  "error_message": "Rate limit exceeded",
+                  "error_details": "Retry after: 60"
+                }
+              }
+            }
+          }
+        },
+        "x-openai-isConsequential": false
+      }
+    },
+    "/v1/workbooks/{id}/chart": {
+      "post": {
+        "tags": ["workbooks"],
+        "summary": "Render a chart using workbook data",
+        "operationId": "get_workbook_chart",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Unique workbook id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChartRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chart rendered as an image",
+            "content": {
+              "image/png": {
+                "schema": { "type": "string", "format": "binary" }
+              },
+              "image/svg+xml": { "schema": { "type": "string" } }
+            }
+          },
+          "400": {
+            "description": "Error returned when you make a bad request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_code": "invalid_json",
+                  "error_message": "Bad request",
+                  "error_details": "RequestJsonParsingFailed"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error returned when you don't have permission to query a workbook",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_message": "Forbidden",
+                  "error_details": "Only API keys can access the workbook engine API"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Error returned when you exceed your API rate limit",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error_code": "rate_limit_exceeded",
+                  "error_message": "Rate limit exceeded",
+                  "error_details": "Retry after: 60"
+                }
+              }
+            }
+          }
+        },
+        "x-openai-isConsequential": false
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APIError": {
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "title": "Error code",
+            "description": "Machine-readable code for the error"
+          },
+          "error_message": {
+            "type": "string",
+            "title": "Error message",
+            "description": "Human-readable description of the error"
+          },
+          "error_details": {
+            "type": "string",
+            "title": "Error details",
+            "description": "Further details on the error message"
+          }
+        },
+        "type": "object",
+        "required": ["error_code", "error_message", "error_details"],
+        "title": "APIError",
+        "description": "Represents an error returned by the API. It includes an `error_code`, `error_message`, and\n`error_details` to help identify and resolve issues."
+      },
+      "CellType": {
+        "type": "string",
+        "enum": ["b", "n", "d", "s"],
+        "title": "CellType",
+        "description": "Specifies the type of a workbook cell. Possible values include `b` (boolean), `n` (number),\n`d` (date), and `s` (string)."
+      },
+      "ChartRenderOptions": {
+        "properties": {
+          "data": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Data",
+            "description": "Chart data range, prefixed with an equals sign",
+            "examples": ["=C2:C142"]
+          },
+          "type": {
+            "$ref": "#/components/schemas/SupportedChartTypes",
+            "description": "Type of chart to render",
+            "default": "line"
+          },
+          "format": {
+            "$ref": "#/components/schemas/SupportedImageTypes",
+            "description": "File format to use for the chart image",
+            "default": "png"
+          },
+          "labels": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Labels",
+            "description": "Range of cells to use as the chart's x-axis labels, prefixed with an equals sign",
+            "default": "",
+            "examples": ["=B2:B142"]
+          },
+          "title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Title",
+            "description": "Cell reference to use as the chart's title. Can also be plain text.",
+            "default": "",
+            "examples": ["=A1", "Monthly inflation rate"]
+          }
+        },
+        "type": "object",
+        "required": ["data"],
+        "title": "ChartRenderOptions",
+        "description": "Options for rendering a chart from workbook data. Specify the data\nrange, chart type, image output format, and title and axis labels."
+      },
+      "ChartRequest": {
+        "properties": {
+          "apply": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/DataTransformation" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Apply",
+            "description": "Cells to update before rendering the chart. Changes are discarded at the end of the request",
+            "examples": [[{ "target": "A2", "value": 1234 }]]
+          },
+          "chart": { "$ref": "#/components/schemas/ChartRenderOptions" }
+        },
+        "type": "object",
+        "required": ["chart"],
+        "title": "ChartRequest",
+        "description": "Options for rendering a chart from workbook data."
+      },
+      "DataCell": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["cell"],
+            "const": "cell",
+            "title": "Type"
+          },
+          "data": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/ValueCell" },
+              { "$ref": "#/components/schemas/ErrorCell" },
+              { "$ref": "#/components/schemas/EmptyCell" }
+            ],
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "DataCell",
+        "description": "Read data format used when options are `{ \"structure\": \"single\", \"values\": \"full\" }`."
+      },
+      "DataList": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["dataList"],
+            "const": "dataList",
+            "title": "Type"
+          },
+          "data": {
+            "items": {
+              "anyOf": [
+                { "$ref": "#/components/schemas/ValueCell" },
+                { "$ref": "#/components/schemas/ErrorCell" },
+                { "$ref": "#/components/schemas/EmptyCell" }
+              ]
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "DataList",
+        "description": "Read data format used when options are `{ \"structure\": \"list\", \"values\": \"full\" }`."
+      },
+      "DataTable": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["dataTable"],
+            "const": "dataTable",
+            "title": "Type"
+          },
+          "data": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  { "$ref": "#/components/schemas/ValueCell" },
+                  { "$ref": "#/components/schemas/ErrorCell" },
+                  { "$ref": "#/components/schemas/EmptyCell" }
+                ]
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "DataTable",
+        "description": "Read data format used when options are `{ \"structure\": \"table\", \"values\": \"full\" }`."
+      },
+      "DataTransformation": {
+        "properties": {
+          "target": {
+            "type": "string",
+            "title": "Target",
+            "description": "A1-style reference for the cell to write to"
+          },
+          "value": {
+            "anyOf": [
+              { "type": "integer" },
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ],
+            "title": "Value",
+            "description": "Value to write to the target cell"
+          }
+        },
+        "type": "object",
+        "required": ["target", "value"],
+        "title": "DataTransformation",
+        "description": "Specifies a temporary change to a workbook cell, including the `target` cell reference and the\n`value` to apply. The API has no state, and so any changes made are cleared after each request."
+      },
+      "EmptyCell": {
+        "properties": {
+          "t": {
+            "type": "string",
+            "enum": ["z"],
+            "const": "z",
+            "title": "Cell type"
+          }
+        },
+        "type": "object",
+        "required": ["t"],
+        "title": "EmptyCell",
+        "description": "Cells that have no content but hold metadata like comments."
+      },
+      "ErrorCell": {
+        "properties": {
+          "r": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cell reference",
+            "description": "Relative A1-based cell reference"
+          },
+          "t": {
+            "type": "string",
+            "enum": ["e"],
+            "const": "e",
+            "title": "Cell type"
+          },
+          "v": { "type": "string", "title": "Cell value" },
+          "e": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Error code",
+            "description": "Description of the error"
+          }
+        },
+        "type": "object",
+        "required": ["t", "v"],
+        "title": "ErrorCell",
+        "description": "Represents a workbook cell with an error. It includes the cell reference (`r`), type (`t`,\nalways `e`), value (`v`), and an optional error code (`e`). It provides details for\nidentifying and understanding errors in workbook data."
+      },
+      "ExportRequest": {
+        "properties": {
+          "apply": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/DataTransformation" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Apply",
+            "description": "Cells to update before exporting",
+            "examples": [[{ "target": "A2", "value": 1234 }]]
+          },
+          "goalSeek": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/QueryRequestGoalSeek" },
+              { "type": "null" }
+            ],
+            "description": "Goal seek. Use this to calculate the required input value for a formula to achieve a specified target result. Useful when the desired outcome is known, but the corresponding input is not"
+          }
+        },
+        "type": "object",
+        "title": "ExportRequest",
+        "description": "Request body for exporting a workbook as an .xlsx file. Cells can be\nupdated before reading the workbook, and a goal seek function can be used\nto calculate the required input value for a formula to achieve a specified\ntarget result.",
+        "examples": [
+          { "apply": [{ "target": "A2", "value": 1234 }], "read": ["A1:A4"] }
+        ]
+      },
+      "FormattedValue": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["formattedValue"],
+            "const": "formattedValue",
+            "title": "Type"
+          },
+          "data": { "type": "string", "title": "Data" }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "FormattedValue",
+        "description": "Read data format used when options are `{ \"structure\": \"single\", \"values\": \"formatted\" }`."
+      },
+      "FormattedValueList": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["formattedValueList"],
+            "const": "formattedValueList",
+            "title": "Type"
+          },
+          "data": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "FormattedValueList",
+        "description": "Read data format used when options are `{ \"structure\": \"list\", \"values\": \"formatted\" }`."
+      },
+      "FormattedValueTable": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["formattedValueTable"],
+            "const": "formattedValueTable",
+            "title": "Type"
+          },
+          "data": {
+            "items": { "items": { "type": "string" }, "type": "array" },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "FormattedValueTable",
+        "description": "Read data format used when options are `{ \"structure\": \"table\", \"values\": \"formatted\" }`."
+      },
+      "QueryRequest": {
+        "properties": {
+          "options": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/QueryRequestOptions" },
+              { "type": "null" }
+            ],
+            "description": "Options to choose the format and structure of the returned data"
+          },
+          "apply": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/DataTransformation" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Apply",
+            "description": "Cells to update before reading. Note that the API has no state and any changes made are cleared after each request",
+            "examples": [[{ "target": "A2", "value": 1234 }]]
+          },
+          "goalSeek": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/QueryRequestGoalSeek" },
+              { "type": "null" }
+            ],
+            "description": "Goal seek. Use this to calculate the required input value for a formula to achieve a specifiedtarget result. Useful when the desired outcome is known, but the corresponding input is not"
+          },
+          "read": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Read",
+            "description": "Cell references to read from the workbook and return to the client",
+            "examples": [["A1", "Sheet2!B3", "=SUM(A1:A4)"]]
+          }
+        },
+        "type": "object",
+        "required": ["read"],
+        "title": "QueryRequest",
+        "description": "Defines a request to read workbook data and, optionally, apply temporary changes. It includes\n`read` (required cell references or formulas), `apply` (optional transient updates to cells),\nand `options` (optional settings for data structure, format, and references).",
+        "examples": [
+          { "apply": [{ "target": "A2", "value": 1234 }], "read": ["A1:A4"] },
+          { "read": ["A1", "Sheet1!B2", "=A2+D2"] }
+        ]
+      },
+      "QueryRequestGoalSeek": {
+        "properties": {
+          "targetCell": {
+            "type": "string",
+            "title": "Target cell",
+            "description": "Reference for the cell that contains the formula you want to resolve"
+          },
+          "targetValue": {
+            "anyOf": [{ "type": "integer" }, { "type": "number" }],
+            "title": "Target value",
+            "description": "The value you want the formula to return"
+          },
+          "controlCell": {
+            "type": "string",
+            "title": "Control cell",
+            "description": "Reference for the cell that will contain the solution"
+          }
+        },
+        "type": "object",
+        "required": ["targetCell", "targetValue", "controlCell"],
+        "title": "QueryRequestGoalSeek",
+        "description": "Goal seek. Use this to calculate the required input value for a formula to achieve a specified\ntarget result. This is particularly useful when the desired outcome is known, but the\ncorresponding input is not."
+      },
+      "QueryRequestOptions": {
+        "properties": {
+          "axis": {
+            "anyOf": [
+              { "type": "string", "enum": ["rows", "columns"] },
+              { "type": "null" }
+            ],
+            "title": "Axis",
+            "description": "Determines if data is outputted as rows or columns",
+            "default": "rows"
+          },
+          "structure": {
+            "anyOf": [
+              { "type": "string", "enum": ["single", "list", "table"] },
+              { "type": "null" }
+            ],
+            "title": "Structure",
+            "description": "Specifies if read values are returned as a single value, a list, or a 2D table",
+            "default": "table"
+          },
+          "values": {
+            "anyOf": [
+              { "type": "string", "enum": ["full", "raw", "formatted"] },
+              { "type": "null" }
+            ],
+            "title": "Values",
+            "description": "Defines if individual cell values are returned in full (JSON objects), raw (just the value), or formatted (with number formatting applied)",
+            "default": "full"
+          },
+          "refs": {
+            "anyOf": [
+              { "type": "string", "enum": ["off", "on"] },
+              { "type": "null" }
+            ],
+            "title": "Refs",
+            "description": "When \"refs\" option is \"on\", include cell addresses (e.g. A1) in each cell object as the \"r\" property",
+            "default": "off"
+          },
+          "originals": {
+            "anyOf": [
+              { "type": "string", "enum": ["off", "on"] },
+              { "type": "null" }
+            ],
+            "title": "Originals",
+            "description": "When \"originals\" option is \"on\", include original values for cells you apply values to",
+            "default": "off"
+          }
+        },
+        "type": "object",
+        "title": "QueryRequestOptions",
+        "description": "Defines settings for formatting and structuring query results."
+      },
+      "QueryResponse": {
+        "properties": {
+          "apply": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/QueryResponseApply" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Apply",
+            "description": "Confirmation of the changes that were applied to the spreadsheet. Note that the API has no state and any changes made are cleared after each request"
+          },
+          "goalSeek": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/QueryResponseGoalSeek" },
+              { "type": "null" }
+            ],
+            "description": "Results of the goal seek operation"
+          },
+          "read": {
+            "items": {
+              "oneOf": [
+                { "$ref": "#/components/schemas/DataTable" },
+                { "$ref": "#/components/schemas/DataList" },
+                { "$ref": "#/components/schemas/DataCell" },
+                { "$ref": "#/components/schemas/ValueTable" },
+                { "$ref": "#/components/schemas/ValueList" },
+                { "$ref": "#/components/schemas/Value" },
+                { "$ref": "#/components/schemas/FormattedValueTable" },
+                { "$ref": "#/components/schemas/FormattedValueList" },
+                { "$ref": "#/components/schemas/FormattedValue" }
+              ],
+              "discriminator": {
+                "propertyName": "type",
+                "mapping": {
+                  "cell": "#/components/schemas/DataCell",
+                  "dataList": "#/components/schemas/DataList",
+                  "dataTable": "#/components/schemas/DataTable",
+                  "formattedValue": "#/components/schemas/FormattedValue",
+                  "formattedValueList": "#/components/schemas/FormattedValueList",
+                  "formattedValueTable": "#/components/schemas/FormattedValueTable",
+                  "value": "#/components/schemas/Value",
+                  "valueList": "#/components/schemas/ValueList",
+                  "valueTable": "#/components/schemas/ValueTable"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Read",
+            "description": "Details on the values that were read from the workbook cells"
+          }
+        },
+        "type": "object",
+        "required": ["apply", "read"],
+        "title": "QueryResponse",
+        "description": "Contains the results of a workbook query, including `read` (queried cell data) and `apply`\n(details of temporary changes applied). Note that the API has no state and any changes made are\ncleared after each request."
+      },
+      "QueryResponseApply": {
+        "properties": {
+          "target": { "type": "string", "title": "Target" },
+          "value": {
+            "anyOf": [
+              { "type": "integer" },
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ],
+            "title": "Value"
+          },
+          "originalValue": {
+            "anyOf": [
+              { "type": "integer" },
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ],
+            "title": "Original value",
+            "description": "Original value of the cell before applying the new value"
+          }
+        },
+        "type": "object",
+        "required": ["target", "value"],
+        "title": "QueryResponseApply",
+        "description": "Details temporary changes made during a query, including the `target` cell, the new `value`, and\nthe `originalValue` before the change. Note that the API has no state and any changes made are\ncleared after each request."
+      },
+      "QueryResponseGoalSeek": {
+        "properties": {
+          "targetCell": {
+            "type": "string",
+            "title": "Target cell",
+            "description": "Reference for the cell that contains the formula you wanted to resolve"
+          },
+          "targetValue": {
+            "anyOf": [{ "type": "integer" }, { "type": "number" }],
+            "title": "Target value",
+            "description": "The value you wanted the formula to return"
+          },
+          "controlCell": {
+            "type": "string",
+            "title": "Control cell",
+            "description": "Reference for the cell that contains the solution"
+          },
+          "solution": {
+            "anyOf": [
+              { "type": "integer" },
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ],
+            "title": "Formula result",
+            "description": "The result of the formula"
+          }
+        },
+        "type": "object",
+        "required": ["targetCell", "targetValue", "controlCell"],
+        "title": "QueryResponseGoalSeek",
+        "description": "Results of a goal seek operation."
+      },
+      "SupportedChartTypes": {
+        "type": "string",
+        "enum": ["line", "column"],
+        "title": "SupportedChartTypes",
+        "description": "Types of charts that can be rendered using workbook data."
+      },
+      "SupportedImageTypes": {
+        "type": "string",
+        "enum": ["png", "svg"],
+        "title": "SupportedImageTypes",
+        "description": "Supported image types for rendering charts from workbook data."
+      },
+      "Value": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["value"],
+            "const": "value",
+            "title": "Type"
+          },
+          "data": {
+            "anyOf": [
+              { "type": "integer" },
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ],
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "Value",
+        "description": "Read data format used when options are `{ \"structure\": \"single\", \"values\": \"raw\" }`."
+      },
+      "ValueCell": {
+        "properties": {
+          "r": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cell reference",
+            "description": "Relative A1-based cell reference"
+          },
+          "t": {
+            "$ref": "#/components/schemas/CellType",
+            "title": "Cell type"
+          },
+          "v": {
+            "anyOf": [
+              { "type": "integer" },
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "boolean" },
+              { "type": "null" }
+            ],
+            "title": "Cell value"
+          },
+          "z": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Number format"
+          },
+          "w": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Formatted text"
+          }
+        },
+        "type": "object",
+        "required": ["t", "v"],
+        "title": "ValueCell",
+        "description": "Represents a single workbook cell, including its value (`v`), cell reference (`r`), type (`t`),\nnumber format (`z`), and formatted text (`w`)."
+      },
+      "ValueList": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["valueList"],
+            "const": "valueList",
+            "title": "Type"
+          },
+          "data": {
+            "items": {
+              "anyOf": [
+                { "type": "integer" },
+                { "type": "number" },
+                { "type": "string" },
+                { "type": "boolean" },
+                { "type": "null" }
+              ]
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "ValueList",
+        "description": "Read data format used when options are `{ \"structure\": \"list\", \"values\": \"raw\" }`."
+      },
+      "ValueTable": {
+        "properties": {
+          "source": { "type": "string", "title": "Source" },
+          "type": {
+            "type": "string",
+            "enum": ["valueTable"],
+            "const": "valueTable",
+            "title": "Type"
+          },
+          "data": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  { "type": "integer" },
+                  { "type": "number" },
+                  { "type": "string" },
+                  { "type": "boolean" },
+                  { "type": "null" }
+                ]
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["source", "type", "data"],
+        "title": "ValueTable",
+        "description": "Read data format used when options are `{ \"structure\": \"table\", \"values\": \"raw\" }`."
+      }
+    },
+    "securitySchemes": { "HTTPBearer": { "type": "http", "scheme": "bearer" } }
+  },
+  "tags": [
+    {
+      "name": "workbooks",
+      "description": "Interact with workbooks and their data"
+    }
+  ]
+}

@@ -10,18 +10,28 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-   "pages": [
-    "introduction",
-    "getting-started",
-    {
-      "group": "workbooks",
-      "pages": [
-        "api-reference/workbooks/query-workbook-data",
-        "api-reference/workbooks/get-instructions-for-how-an-ai-should-interact-with-a-workbook",
-        "api-reference/workbooks/get-a-url-that-returns-a-chart-image-of-workbook-data"
-      ]
-    }
-   ]
+    "tabs": [
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "GRID API",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/getting-started"
+            ]
+          },
+          {
+            "group": "Workbooks",
+            "pages": [
+              "api-reference/workbooks/query",
+              "api-reference/workbooks/export",
+              "api-reference/workbooks/render-chart"
+            ]
+          }
+        ]
+      }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
