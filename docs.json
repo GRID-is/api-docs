@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "mint",
   "name": "GRID API",
   "description": "Turn spreadsheets into RESTful APIs",
   "colors": {
