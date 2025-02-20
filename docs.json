@@ -9,6 +9,11 @@
     "dark": "#15803D"
   },
   "favicon": "/favicon.svg",
+  "integrations": {
+    "amplitude": {
+      "apiKey": "4075db85598fcf35bc27ec5503fdff43"
+    }
+  },
   "navigation": {
     "tabs": [
       {
