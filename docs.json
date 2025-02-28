@@ -45,7 +45,7 @@
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Dashboard",
+      "label": "Manage",
       "href": "https://alpha.grid.is/"
     }
   },
